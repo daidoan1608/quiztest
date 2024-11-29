@@ -1,0 +1,17 @@
+package com.fita.vnua.quiz.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AnswerDto {
+
+    private Long optionId;   // Mã định danh của đáp án
+    private Long questionId; // ID của câu hỏi mà đáp án này thuộc về
+    private String content;  // Nội dung của đáp án
+    private boolean isCorrect; // Đúng hay sai, chỉ định nếu đáp án này là đúng
+
+}
