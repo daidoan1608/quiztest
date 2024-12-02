@@ -3,6 +3,9 @@ package com.fita.vnua.quiz.model.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 public class Question {
@@ -19,6 +22,9 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Answer> answers = new ArrayList<>();
 
     public enum Difficulty {
         EASY, MEDIUM, HARD
