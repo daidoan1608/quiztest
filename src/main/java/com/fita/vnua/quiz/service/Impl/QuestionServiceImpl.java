@@ -37,22 +37,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-//    public Response create(QuestionDto questionDto) {
-//        // Chuyển đổi từ DTO sang entity
-//        Question question = modelMapper.map(questionDto, Question.class);
-//
-//        // Lưu đối tượng Question và lấy ID của nó
-//        question = questionRepository.save(question);
-//
-//        // Kiểm tra danh sách câu trả lời
-//        if (questionDto.getAnswers() != null && !questionDto.getAnswers().isEmpty()) {
-//            // Duyệt qua danh sách câu trả lời và lưu từng câu trả lời
-//            for (AnswerDto answerDto : questionDto.getAnswers()) {
-//                Answer answer = modelMapper.map(answerDto, Answer.class); // Chuyển đổi từ DTO sang entity
-//                answer.setQuestion(question); // Gắn đối tượng Question vào Answer
-//                answerRepository.save(answer); // Lưu Answer vào database
-//            }
-//        }
+    public List<QuestionDto> getQuestionsBySubject(Long subjectId) {
+        return questionRepository.findQuestionsBySubjectId(subjectId).stream().map(question -> modelMapper.map(question, QuestionDto.class)).toList();
+    }
+
+    @Override
     public Response create(QuestionDto questionDto) {
         // Tạo đối tượng Question mới
         System.out.println("Received QuestionDto: " + questionDto.toString());

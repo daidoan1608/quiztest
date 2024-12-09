@@ -3,6 +3,7 @@ package com.fita.vnua.quiz.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -13,4 +14,6 @@ public class ExamDto {
     private String description;
     private Integer duration;
     private UUID createdBy;
+    private String createdDate;
+    private List<QuestionDto> questions;
 }

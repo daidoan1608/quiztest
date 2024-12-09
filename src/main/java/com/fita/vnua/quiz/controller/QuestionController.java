@@ -13,6 +13,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionServiceImpl questionService;
+    @GetMapping("/by-subject/{subjectId}")
+    public ResponseEntity<?> getQuestionsBySubject(@PathVariable Long subjectId) {
+        List<QuestionDto> questions = questionService.getQuestionsBySubject(subjectId);
+        if (questions.isEmpty()) {
+            return ResponseEntity.ok(Response.builder().responseCode("404").responseMessage("No question found").build());
+        }
+        return ResponseEntity.ok(questions);
+    }
 
     @GetMapping("/chapter/questions/{chapterId}")
     public ResponseEntity<?> getQuestionByChapterId(@PathVariable("chapterId") Long chapterId) {

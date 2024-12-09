@@ -10,6 +10,8 @@ public interface QuestionService {
     List<QuestionDto> getQuestionsByChapterId(Long chapterId);
     List<QuestionDto> getAllQuestion();
 
+    List<QuestionDto> getQuestionsBySubject(Long subjectId);
+
     Response create(QuestionDto questionDto);
 
     Response update(Long questionId, QuestionDto questionDto);
