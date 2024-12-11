@@ -3,11 +3,12 @@ package com.fita.vnua.quiz.genaretor;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@Getter
+@Setter
 @NoArgsConstructor
 @Embeddable
 public class ExamQuestionId implements Serializable {

@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,14 +43,31 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Response create(QuestionDto questionDto) {
-        // Tạo đối tượng Question mới
-        System.out.println("Received QuestionDto: " + questionDto.toString());
+    public List<QuestionDto> getQuestionsBySubjectAndNumber(Long subjectId, int number) {
+        List<Question> questions = questionRepository.findRandomQuestionsBySubject(subjectId, number);
+
+        // Chuyển đổi từ Entity sang DTO
+        return questions.stream()
+                .map(question -> modelMapper.map(question, QuestionDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<QuestionDto> getQuestionsByExamId(Long examId) {
+        List<Question> questions = questionRepository.findQuestionsByExamId(examId);
+
+        // Sử dụng ModelMapper để chuyển đổi từ Entity sang DTO
+        return questions.stream()
+                .map(question -> modelMapper.map(question, QuestionDto.class))
+                .collect(Collectors.toList());
+    }
 
 
+    @Override
+    public QuestionDto create(QuestionDto questionDto) {
         Question question = new Question();
         question.setContent(questionDto.getContent());
-        question.setDifficulty(Question.Difficulty.valueOf(questionDto.getDifficulty())); // Giả sử bạn có getter cho độ khó
+        question.setDifficulty(Question.Difficulty.valueOf(questionDto.getDifficulty()));
 
         // Gán chapter cho question
         Chapter chapter = chapterRepository.findById(questionDto.getChapterId())
@@ -70,7 +88,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         // Lưu đối tượng Question (các Answer sẽ tự động được lưu do CascadeType.ALL)
         question = questionRepository.save(question); // ID sẽ được gán tại đây
-
+        modelMapper.map(question, questionDto);
         // Lưu các Answer sau khi Question đã có ID
         if (questionDto.getAnswers() != null && !questionDto.getAnswers().isEmpty()) {
             for (AnswerDto answerDto : questionDto.getAnswers()) {
@@ -80,21 +98,17 @@ public class QuestionServiceImpl implements QuestionService {
 
                 // Gán Question cho Answer
                 answer.setQuestion(question);
-
                 // Lưu Answer vào database
                 answerRepository.save(answer);
             }
         }
 
 
-        // Trả về phản hồi
-        return Response.builder()
-                .responseMessage("Question created successfully")
-                .responseCode("200 OK").build();
+        return questionDto;
     }
 
     @Override
-    public Response update(Long questionId, QuestionDto questionDto) {
+    public QuestionDto update(Long questionId, QuestionDto questionDto) {
         // Tìm câu hỏi hiện tại
         var existingQuestion = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found"));
@@ -118,12 +132,10 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         // Lưu câu hỏi đã cập nhật
-        questionRepository.save(existingQuestion);
+        Question question = questionRepository.save(existingQuestion);
 
         // Trả về phản hồi
-        return Response.builder()
-                .responseMessage("Question and answers updated successfully: " + oldContent + " -> " + newContent)
-                .responseCode("200 OK").build();
+        return modelMapper.map(question, QuestionDto.class);
     }
 
     @Override

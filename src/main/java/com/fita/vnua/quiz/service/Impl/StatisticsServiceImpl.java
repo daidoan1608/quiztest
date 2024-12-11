@@ -14,6 +14,7 @@ import java.util.Map;
 public class StatisticsServiceImpl implements StatisticsService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+
     @Override
     public Map<String, Object> getStatistics() {
         long questionCount = questionRepository.count();

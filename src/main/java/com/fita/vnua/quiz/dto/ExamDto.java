@@ -10,6 +10,7 @@ import java.util.UUID;
 @Setter
 public class ExamDto {
     private Long examId;
+    private Long subjectId;
     private String title;
     private String description;
     private Integer duration;

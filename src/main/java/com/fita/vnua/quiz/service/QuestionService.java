@@ -8,13 +8,18 @@ import java.util.List;
 
 public interface QuestionService {
     List<QuestionDto> getQuestionsByChapterId(Long chapterId);
+
     List<QuestionDto> getAllQuestion();
 
     List<QuestionDto> getQuestionsBySubject(Long subjectId);
 
-    Response create(QuestionDto questionDto);
+    List<QuestionDto> getQuestionsBySubjectAndNumber(Long subjectId, int number);
 
-    Response update(Long questionId, QuestionDto questionDto);
+    List<QuestionDto> getQuestionsByExamId(Long examId);
+
+    QuestionDto create(QuestionDto questionDto);
+
+    QuestionDto update(Long questionId, QuestionDto questionDto);
 
     Response delete(Long questionId);
 

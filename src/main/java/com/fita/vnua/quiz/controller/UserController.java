@@ -43,12 +43,16 @@ public class UserController {
     }
 
     @PostMapping("admin/add/users")
-    public ResponseEntity<Response> createUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.create(userDto));
+    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+        UserDto saveUser = userService.create(userDto);
+        if (saveUser == null) {
+            return ResponseEntity.ok(Response.builder().responseCode("400").responseMessage("User not created").build());
+        }
+        return ResponseEntity.ok(saveUser);
     }
 
     @PatchMapping("admin/update/users/{userId}")
-    public ResponseEntity<Response> updateUser(@PathVariable("userId") UUID userId, @RequestBody UserDto userDto) {
+    public ResponseEntity<?> updateUser(@PathVariable("userId") UUID userId, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.update(userId, userDto));
     }
 

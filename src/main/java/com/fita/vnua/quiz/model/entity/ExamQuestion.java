@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "exam_question")
 public class ExamQuestion {
     @EmbeddedId
     private ExamQuestionId id;

@@ -8,9 +8,9 @@ import java.util.List;
 public interface SubjectService {
     List<SubjectDto> getAllSubject();
 
-    Response create(SubjectDto subjectDto);
+    SubjectDto create(SubjectDto subjectDto);
 
-    Response update(Long subjectId, SubjectDto subjectDto);
+    SubjectDto update(Long subjectId, SubjectDto subjectDto);
 
     Response delete(Long subjectId);
 }

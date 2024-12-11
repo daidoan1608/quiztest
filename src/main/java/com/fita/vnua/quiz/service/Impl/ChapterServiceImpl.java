@@ -30,15 +30,16 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public Response create(ChapterDto chapterDto) {
-        chapterRepository.save(modelMapper.map(chapterDto, Chapter.class));
-        return Response.builder()
-                .responseMessage("Chapter created successfully")
-                .responseCode("200 OK").build();
+    public ChapterDto create(ChapterDto chapterDto) {
+        Chapter chapter = modelMapper.map(chapterDto, Chapter.class);
+
+        Chapter savedChapter = chapterRepository.save(chapter);
+
+        return modelMapper.map(savedChapter, ChapterDto.class);
     }
 
     @Override
-    public Response update(Long chapterId, ChapterDto chapterDto) {
+    public ChapterDto update(Long chapterId, ChapterDto chapterDto) {
         var existingChapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new EntityNotFoundException("Chapter not found"));
         String oldName = chapterDto.getName();
@@ -46,9 +47,7 @@ public class ChapterServiceImpl implements ChapterService {
         existingChapter.setName(chapterDto.getName());
         existingChapter.setChapterNumber(chapterDto.getChapterNumber());
         chapterRepository.save(existingChapter);
-        return Response.builder()
-                .responseMessage("Chapter updated successfully : " + oldName + " -> " + newName)
-                .responseCode("200 OK").build();
+        return modelMapper.map(existingChapter, ChapterDto.class);
     }
 
     @Override

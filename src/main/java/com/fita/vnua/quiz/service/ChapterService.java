@@ -7,11 +7,12 @@ import java.util.List;
 
 public interface ChapterService {
     List<ChapterDto> getChapterBySubject(Long subjectId);
+
     List<ChapterDto> getAllChapter();
 
-    Response create(ChapterDto chapterDto);
+    ChapterDto create(ChapterDto chapterDto);
 
-    Response update(Long chapterId, ChapterDto chapterDto);
+    ChapterDto update(Long chapterId, ChapterDto chapterDto);
 
     Response delete(Long chapterId);
 }

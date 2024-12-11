@@ -10,7 +10,7 @@ public interface UserService {
     List<UserDto> getAllUsers();
     UserDto getUserById(UUID userId);
     List<UserDto> getUserBySearchKey(String keyword);
-    Response create(UserDto userDto);
-    Response update(UUID userId, UserDto userDto);
+    UserDto create(UserDto userDto);
+    UserDto update(UUID userId, UserDto userDto);
     Response delete(UUID userId);
 }
