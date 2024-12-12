@@ -1,4 +1,4 @@
-package com.fita.vnua.quiz.dto.response;
+package com.fita.vnua.quiz.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,10 +1,11 @@
 package com.fita.vnua.quiz.controller;
 
-import com.fita.vnua.quiz.dto.UserDto;
-import com.fita.vnua.quiz.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.UserDto;
+import com.fita.vnua.quiz.model.dto.response.Response;
 import com.fita.vnua.quiz.service.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserServiceImpl userService;
+//    private final BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("admin/users")
     public ResponseEntity<?> getAllUsers() {
@@ -44,6 +46,7 @@ public class UserController {
 
     @PostMapping("admin/add/users")
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+//        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         UserDto saveUser = userService.create(userDto);
         if (saveUser == null) {
             return ResponseEntity.ok(Response.builder().responseCode("400").responseMessage("User not created").build());

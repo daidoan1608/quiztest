@@ -1,13 +1,13 @@
-package com.fita.vnua.quiz.dto;
+package com.fita.vnua.quiz.model.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExamDto {
     private Long examId;
     private Long subjectId;

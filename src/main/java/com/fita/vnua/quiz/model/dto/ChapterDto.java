@@ -1,10 +1,10 @@
-package com.fita.vnua.quiz.dto;
+package com.fita.vnua.quiz.model.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChapterDto {
     private Long chapterId;
     private String name;

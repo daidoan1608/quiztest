@@ -8,7 +8,7 @@ import lombok.Data;
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer optionId;
+    private Long optionId;
 
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)

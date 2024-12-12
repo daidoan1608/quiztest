@@ -1,7 +1,7 @@
 package com.fita.vnua.quiz.service.Impl;
 
-import com.fita.vnua.quiz.dto.ExamDto;
-import com.fita.vnua.quiz.dto.QuestionDto;
+import com.fita.vnua.quiz.model.dto.ExamDto;
+import com.fita.vnua.quiz.model.dto.QuestionDto;
 import com.fita.vnua.quiz.genaretor.ExamQuestionId;
 import com.fita.vnua.quiz.model.entity.*;
 import com.fita.vnua.quiz.repository.*;

@@ -2,11 +2,13 @@ package com.fita.vnua.quiz.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.UUID;
 
 @Entity
 @Data
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

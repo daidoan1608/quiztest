@@ -1,8 +1,11 @@
 package com.fita.vnua.quiz.service.Impl;
 
-import com.fita.vnua.quiz.dto.SubjectDto;
-import com.fita.vnua.quiz.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.ChapterDto;
+import com.fita.vnua.quiz.model.dto.SubjectDto;
+import com.fita.vnua.quiz.model.dto.response.Response;
+import com.fita.vnua.quiz.model.entity.Chapter;
 import com.fita.vnua.quiz.model.entity.Subject;
+import com.fita.vnua.quiz.repository.ChapterRepository;
 import com.fita.vnua.quiz.repository.SubjectRepository;
 import com.fita.vnua.quiz.service.SubjectService;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,10 +19,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SubjectServiceImpl implements SubjectService {
     private final SubjectRepository subjectRepository;
+    private final ChapterRepository chapterRepository;
     private final ModelMapper modelMapper;
+
     @Override
     public List<SubjectDto> getAllSubject() {
-        return subjectRepository.findAll().stream().map(subject -> modelMapper.map(subject, SubjectDto.class)).toList();
+        List<SubjectDto> subjects = subjectRepository.findAll().stream().map(subject -> modelMapper.map(subject, SubjectDto.class)).toList();
+        for (SubjectDto subject : subjects) {
+            List<ChapterDto> chapterDtos = chapterRepository.findBySubject(subject.getSubjectId()).stream().map(chapter -> modelMapper.map(chapter, ChapterDto.class)).toList();
+            subject.setChapters(chapterDtos);
+        }
+        return subjects;
+    }
+
+    @Override
+    public SubjectDto getSubjectById(Long subjectId) {
+        SubjectDto subjectDto = modelMapper.map(subjectRepository.findById(subjectId), SubjectDto.class);
+        subjectDto.setChapters(chapterRepository.findBySubject(subjectId).stream().map(chapter -> modelMapper.map(chapter, ChapterDto.class)).toList());
+        return subjectDto;
     }
 
     @Override

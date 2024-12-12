@@ -1,13 +1,13 @@
-package com.fita.vnua.quiz.dto;
+package com.fita.vnua.quiz.model.dto;
 
 import com.fita.vnua.quiz.model.entity.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
-@Setter
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     private UUID userId;
     private String username;

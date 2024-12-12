@@ -1,8 +1,8 @@
 package com.fita.vnua.quiz.service.Impl;
 
-import com.fita.vnua.quiz.dto.AnswerDto;
-import com.fita.vnua.quiz.dto.QuestionDto;
-import com.fita.vnua.quiz.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.AnswerDto;
+import com.fita.vnua.quiz.model.dto.QuestionDto;
+import com.fita.vnua.quiz.model.dto.response.Response;
 import com.fita.vnua.quiz.model.entity.Answer;
 import com.fita.vnua.quiz.model.entity.Chapter;
 import com.fita.vnua.quiz.model.entity.Question;

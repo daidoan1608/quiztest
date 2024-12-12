@@ -1,4 +1,4 @@
-package com.fita.vnua.quiz.dto;
+package com.fita.vnua.quiz.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,9 +1,10 @@
 package com.fita.vnua.quiz.service.Impl;
 
-import com.fita.vnua.quiz.dto.ChapterDto;
-import com.fita.vnua.quiz.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.ChapterDto;
+import com.fita.vnua.quiz.model.dto.response.Response;
 import com.fita.vnua.quiz.model.entity.Chapter;
 import com.fita.vnua.quiz.repository.ChapterRepository;
+import com.fita.vnua.quiz.repository.SubjectRepository;
 import com.fita.vnua.quiz.service.ChapterService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

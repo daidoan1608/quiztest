@@ -1,7 +1,7 @@
 package com.fita.vnua.quiz.controller;
 
-import com.fita.vnua.quiz.dto.ExamDto;
-import com.fita.vnua.quiz.dto.request.ExamRequest;
+import com.fita.vnua.quiz.model.dto.ExamDto;
+import com.fita.vnua.quiz.model.dto.request.ExamRequest;
 import com.fita.vnua.quiz.service.ExamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

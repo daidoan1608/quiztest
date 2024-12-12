@@ -9,7 +9,7 @@ import lombok.Data;
 public class UserAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userAnswerId;
+    private Long userAnswerId;
 
     @ManyToOne
     @JoinColumn(name = "user_exam_id", nullable = false)

@@ -1,7 +1,7 @@
 package com.fita.vnua.quiz.service;
 
-import com.fita.vnua.quiz.dto.UserDto;
-import com.fita.vnua.quiz.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.UserDto;
+import com.fita.vnua.quiz.model.dto.response.Response;
 
 import java.util.List;
 import java.util.UUID;

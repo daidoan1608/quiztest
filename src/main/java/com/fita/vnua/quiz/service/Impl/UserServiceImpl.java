@@ -1,7 +1,7 @@
 package com.fita.vnua.quiz.service.Impl;
 
-import com.fita.vnua.quiz.dto.UserDto;
-import com.fita.vnua.quiz.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.UserDto;
+import com.fita.vnua.quiz.model.dto.response.Response;
 import com.fita.vnua.quiz.exception.CustomApiException;
 import com.fita.vnua.quiz.model.entity.User;
 import com.fita.vnua.quiz.repository.UserRepository;
@@ -13,6 +13,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    //    private final PasswordEncoder passwordEncoder;
     @Override
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
     public UserDto create(UserDto userDto) {
         try {
             User user = modelMapper.map(userDto, User.class);
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             User savedUser = userRepository.save(user);
             return modelMapper.map(savedUser, UserDto.class);
         } catch (DataIntegrityViolationException ex) {
