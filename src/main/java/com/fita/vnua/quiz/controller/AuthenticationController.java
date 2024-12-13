@@ -1,9 +1,8 @@
-// Authentication Controller
 package com.fita.vnua.quiz.controller;
-
 
 import com.fita.vnua.quiz.model.dto.UserDto;
 import com.fita.vnua.quiz.model.dto.request.AuthenticationRequest;
+import com.fita.vnua.quiz.model.dto.request.RefreshTokenRequest;
 import com.fita.vnua.quiz.model.dto.response.AuthenticationResponse;
 import com.fita.vnua.quiz.model.entity.User;
 import com.fita.vnua.quiz.repository.UserRepository;
@@ -29,41 +28,60 @@ public class AuthenticationController {
     private final CustomUserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        // Authenticate the user
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+        try {
+            // Authenticate the user
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()
+                    )
+            );
 
-        // Load user details
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+            // Load user details
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
-        // Generate tokens
-        final String accessToken = jwtTokenUtil.generateToken(userDetails);
-        final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+            // Generate tokens
+            final String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
+            final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
 
-        // Return tokens
-        return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
+            // Return tokens
+            return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Authentication failed: " + e.getMessage());
+        }
     }
 
-    // New endpoint for refreshing the access token
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody String refreshToken) {
-        // Validate the refresh token and generate a new access token
-        String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
-        if (username != null && !jwtTokenUtil.isTokenExpired(refreshToken)) {
+    public ResponseEntity<?> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        try {
+            String refreshToken = refreshTokenRequest.getRefreshToken();
+            // Extract username from refresh token
+            String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
+
+            // Load user details
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            String newAccessToken = jwtTokenUtil.generateToken(userDetails);
-            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, refreshToken));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+
+            // Validate refresh token
+            if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+                // Generate new access token
+                String newAccessToken = jwtTokenUtil.generateAccessToken(userDetails);
+
+                return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, refreshToken));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid refresh token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Token refresh failed: " + e.getMessage());
         }
     }
 
@@ -101,18 +119,38 @@ public class AuthenticationController {
 
         // Generate token for the new user
         final UserDetails userDetails = userDetailsService.loadUserByUsername(newUser.getUsername());
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        final String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
 
         // Return token
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new AuthenticationResponse(token, refreshToken));
+                .body(new AuthenticationResponse(accessToken, refreshToken));
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestBody String refreshToken) {
-        // Logic to invalidate the refresh token
-        // This could involve removing it from a database or in-memory store
-        // For simplicity, we will just return a success message
-        return ResponseEntity.ok("Logged out successfully");
+        try {
+            // Validate refresh token
+            String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
+
+            // Kiểm tra tính hợp lệ của refresh token
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+                // TODO: Implement token blacklisting or storage-based invalidation
+                // Ví dụ:
+                // - Lưu token vào danh sách đen
+                // - Xóa token khỏi cơ sở dữ liệu lưu trữ token
+
+                return ResponseEntity.ok("Logged out successfully");
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid refresh token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Logout failed: " + e.getMessage());
+        }
     }
 }

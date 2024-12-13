@@ -6,12 +6,15 @@ import com.fita.vnua.quiz.model.dto.request.UserExamRequest;
 import com.fita.vnua.quiz.model.entity.*;
 import com.fita.vnua.quiz.repository.*;
 import com.fita.vnua.quiz.service.UserExamService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserExamServiceImpl implements UserExamService {
@@ -48,15 +51,28 @@ public class UserExamServiceImpl implements UserExamService {
         UserExam savedUserExam = userExamRepository.save(modelMapper.map(userExamDto, UserExam.class));
 
         for (UserAnswerDto userAnswerDto : userAnswerDtos) {
+            // Kiểm tra các trường quan trọng trước khi thao tác
+            if (userAnswerDto.getAnswerId() == null ||
+                    userAnswerDto.getQuestionId() == null ||
+                    savedUserExam == null) {
+                // Xử lý trường hợp thiếu dữ liệu
+                log.error("Invalid user answer data: {}", userAnswerDto);
+                continue;
+            }
+
             userAnswerDto.setUserExamId(savedUserExam.getUserExamId());
+
             UserAnswer userAnswer = new UserAnswer();
             userAnswer.setUserExam(savedUserExam);
 
-            Answer answer = answerRepository.findById(userAnswerDto.getAnswerId()).orElse(null);
+            Answer answer = answerRepository.findById(userAnswerDto.getAnswerId())
+                    .orElseThrow(() -> new EntityNotFoundException("Answer not found with id: " + userAnswerDto.getAnswerId()));
             userAnswer.setAnswer(answer);
 
-            Question question = questionRepository.findById(userAnswerDto.getQuestionId()).orElse(null);
+            Question question = questionRepository.findById(userAnswerDto.getQuestionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + userAnswerDto.getQuestionId()));
             userAnswer.setQuestion(question);
+
             userAnswerRepository.save(userAnswer);
         }
         return modelMapper.map(savedUserExam, UserExamDto.class);

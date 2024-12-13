@@ -16,36 +16,37 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil {
-    // JWT secret key
     @Value("${jwt.secret}")
     private String secret;
 
-    // JWT token validity (24 hours)
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    @Value("${jwt.access-token-expiration}")
+    private Long accessTokenExpiration;
 
-    // Generate a secret key for HMAC-SHA
+    @Value("${jwt.refresh-token-expiration}")
+    private Long refreshTokenExpiration;
+
+    // Tạo khóa cho việc ký token
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // Retrieve username from jwt token
+    // Trích xuất username từ token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    // Retrieve expiration date from jwt token
+    // Trích xuất ngày hết hạn từ token
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    // Generic method to retrieve claim
+    // Trích xuất thông tin từ token
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    // For retrieving any information from token, need secret key
+    // Lấy tất cả các claims từ token
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -54,52 +55,47 @@ public class JwtTokenUtil {
                 .getBody();
     }
 
-    // Check if the token has expired
-    public Boolean isTokenExpired(String token) {
+    // Kiểm tra token đã hết hạn chưa
+    private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    // Generate token for user
-    public String generateToken(UserDetails userDetails) {
+    // Tạo access token
+    public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        return doGenerateToken(claims, userDetails.getUsername(), accessTokenExpiration);
     }
 
-    // While creating the token:
-    // 1. Define claims of the token, like Issuer, Expiration, Subject, and the ID
-    // 2. Sign the JWT using the HS512 algorithm and secret key
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
+    // Tạo refresh token
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, userDetails.getUsername(), refreshTokenExpiration);
+    }
+
+    // Phương thức chung để tạo token
+    private String doGenerateToken(Map<String, Object> claims, String subject, long expiration) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    // Validate token
+    // Kiểm tra token có hợp lệ không
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    // Add this method to generate refresh tokens
-    public String generateRefreshToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername(), true);
-    }
-
-    // Modify the doGenerateToken method to accept an additional parameter for refresh tokens
-    private String doGenerateToken(Map<String, Object> claims, String subject, boolean isRefreshToken) {
-        long tokenValidity = isRefreshToken ? expiration * 1000 * 7 : expiration * 1000; // Refresh token valid for 7 days
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+    // Làm mới access token sử dụng refresh token
+    public String refreshAccessToken(String refreshToken, UserDetails userDetails) {
+        // Kiểm tra tính hợp lệ của refresh token
+        if (validateToken(refreshToken, userDetails)) {
+            return generateAccessToken(userDetails);
+        }
+        throw new RuntimeException("Refresh token không hợp lệ");
     }
 }
