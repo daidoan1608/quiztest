@@ -28,9 +28,11 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> { /* Nếu bạn đã cấu hình WebMvcConfigurer, không cần cấu hình thêm ở đây */ })
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/public/**").permitAll()  // Public authentication endpoints
