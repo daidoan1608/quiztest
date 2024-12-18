@@ -4,8 +4,10 @@ import com.fita.vnua.quiz.model.dto.UserDto;
 import com.fita.vnua.quiz.model.dto.response.Response;
 import com.fita.vnua.quiz.service.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserServiceImpl userService;
-//    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("admin/users")
     public ResponseEntity<?> getAllUsers() {
@@ -23,7 +25,7 @@ public class UserController {
         if (users.isEmpty()) {
             return ResponseEntity.ok(Response.builder().responseCode("404").responseMessage("No user found").build());
         }
-        return ResponseEntity.ok(users);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("admin/users/search")
@@ -46,7 +48,7 @@ public class UserController {
 
     @PostMapping("admin/add/users")
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
-//        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         UserDto saveUser = userService.create(userDto);
         if (saveUser == null) {
             return ResponseEntity.ok(Response.builder().responseCode("400").responseMessage("User not created").build());
@@ -54,7 +56,7 @@ public class UserController {
         return ResponseEntity.ok(saveUser);
     }
 
-    @PatchMapping("admin/update/users/{userId}")
+    @PatchMapping("update/users/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable("userId") UUID userId, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.update(userId, userDto));
     }

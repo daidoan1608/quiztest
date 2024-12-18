@@ -33,6 +33,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/public/**").permitAll()  // Public authentication endpoints
                         .requestMatchers("/auth/**").permitAll()  // Public authentication endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin-only endpoints
                         .requestMatchers("/mod/**").hasAnyRole("ADMIN", "MOD")  // Moderator or admin endpoints
@@ -57,4 +58,5 @@ public class SecurityConfig {
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 }

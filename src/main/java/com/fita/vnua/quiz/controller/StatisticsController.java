@@ -12,7 +12,7 @@ import java.util.Map;
 public class StatisticsController {
     private final StatisticsService statisticsService;
 
-    @GetMapping("/api/statistics")
+    @GetMapping("admin/statistics")
     public Map<String, Object> getStatistics() {
         return statisticsService.getStatistics();
     }

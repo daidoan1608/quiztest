@@ -18,7 +18,10 @@ public class SubjectController {
     public ResponseEntity<?> getAllSubject() {
         List<SubjectDto> subjects = subjectService.getAllSubject();
         if (subjects.isEmpty()) {
-            return ResponseEntity.ok(Response.builder().responseCode("404").responseMessage("No subject found").build());
+            return ResponseEntity.ok(Response.builder()
+                    .responseCode("404")
+                    .responseMessage("No subject found")
+                    .build());
         }
         return ResponseEntity.ok(subjectService.getAllSubject());
     }

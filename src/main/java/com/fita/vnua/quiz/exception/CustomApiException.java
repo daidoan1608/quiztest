@@ -13,6 +13,7 @@ public class CustomApiException extends RuntimeException {
     public CustomApiException(String message, Throwable cause) {
         super(message, cause);
     }
+
     public CustomApiException(String message, HttpStatus status) {
         super(message);
         this.status = status;

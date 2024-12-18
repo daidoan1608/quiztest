@@ -14,7 +14,7 @@ import java.util.List;
 public class ChapterController {
     private final ChapterServiceImpl chapterService;
 
-    @GetMapping("/subject/chapters/{subjectId}")
+    @GetMapping("public/subject/chapters/{subjectId}")
     public ResponseEntity<?> getChapterBySubjectId(@PathVariable("subjectId") Long subjectId) {
         List<ChapterDto> chapters = chapterService.getChapterBySubject(subjectId);
         if (chapters.isEmpty()) {
@@ -23,7 +23,7 @@ public class ChapterController {
         return ResponseEntity.ok(chapterService.getChapterBySubject(subjectId));
     }
 
-    @GetMapping("subject/chapters")
+    @GetMapping("public/subject/chapters")
     public ResponseEntity<?> getAllChapter() {
         List<ChapterDto> chapters = chapterService.getAllChapter();
         if (chapters.isEmpty()) {
