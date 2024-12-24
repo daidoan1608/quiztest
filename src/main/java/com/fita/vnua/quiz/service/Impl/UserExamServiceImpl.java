@@ -3,6 +3,7 @@ package com.fita.vnua.quiz.service.Impl;
 import com.fita.vnua.quiz.model.dto.UserAnswerDto;
 import com.fita.vnua.quiz.model.dto.UserExamDto;
 import com.fita.vnua.quiz.model.dto.request.UserExamRequest;
+import com.fita.vnua.quiz.model.dto.response.UserExamResponse;
 import com.fita.vnua.quiz.model.entity.*;
 import com.fita.vnua.quiz.repository.*;
 import com.fita.vnua.quiz.service.UserExamService;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -28,9 +30,29 @@ public class UserExamServiceImpl implements UserExamService {
 
 
     @Override
-    public UserExamDto getUserExamById(Long id) {
-        UserExam userExam = userExamRepository.findById(id).orElse(null);
-        return modelMapper.map(userExam, UserExamDto.class);
+    public UserExamResponse getUserExamById(Long id) {
+        UserExam userExam = userExamRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User exam not found with id: " + id));
+        UserExamDto userExamDto = new UserExamDto();
+        userExamDto.setUserExamId(userExam.getUserExamId());
+        userExamDto.setStartTime(userExam.getStartTime());
+        userExamDto.setEndTime(userExam.getEndTime());
+        userExamDto.setScore(userExam.getScore());
+        userExamDto.setUserId(userExam.getUser().getUserId());
+        userExamDto.setExamId(userExam.getExam().getExamId());
+        List<UserAnswer> userAnswer = userAnswerRepository.findUserAnswersByUserExamId(id);
+        List<UserAnswerDto> userAnswerDtos = new ArrayList<>();
+        for (UserAnswer userAnswer1 : userAnswer) {
+            UserAnswerDto userAnswerDto = new UserAnswerDto();
+            userAnswerDto.setAnswerId(userAnswer1.getAnswer().getOptionId());
+            userAnswerDto.setQuestionId(userAnswer1.getQuestion().getQuestionId());
+            userAnswerDto.setUserExamId(userAnswer1.getUserExam().getUserExamId());
+            userAnswerDtos.add(userAnswerDto);
+        }
+        return UserExamResponse.builder()
+                .userExamDto(userExamDto)
+                .userAnswerDtos(userAnswerDtos)
+                .build();
     }
 
     @Override

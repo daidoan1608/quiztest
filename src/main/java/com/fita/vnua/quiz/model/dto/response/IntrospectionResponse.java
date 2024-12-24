@@ -3,9 +3,12 @@ package com.fita.vnua.quiz.model.dto.response;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class IntrospectionResponse {
+    private UUID userId;
     private boolean active;
     private String username;
     private String tokenType;

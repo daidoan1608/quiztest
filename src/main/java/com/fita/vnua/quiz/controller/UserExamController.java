@@ -3,6 +3,7 @@ package com.fita.vnua.quiz.controller;
 import com.fita.vnua.quiz.model.dto.UserExamDto;
 import com.fita.vnua.quiz.model.dto.request.UserExamRequest;
 import com.fita.vnua.quiz.model.dto.response.Response;
+import com.fita.vnua.quiz.model.dto.response.UserExamResponse;
 import com.fita.vnua.quiz.service.Impl.UserExamServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class UserExamController {
 
     @GetMapping("userexams/{userExamId}")
     public ResponseEntity<?> getUserExamById(@PathVariable("userExamId") Long userExamId) {
-        UserExamDto userExam = userExamService.getUserExamById(userExamId);
+        UserExamResponse userExam = userExamService.getUserExamById(userExamId);
         if (userExam == null) {
             return ResponseEntity.ok(Response.builder().responseCode("404").responseMessage("No user exam found").build());
         }

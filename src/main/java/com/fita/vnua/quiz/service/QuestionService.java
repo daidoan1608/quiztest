@@ -4,8 +4,11 @@ import com.fita.vnua.quiz.model.dto.QuestionDto;
 import com.fita.vnua.quiz.model.dto.response.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface QuestionService {
+    Optional<QuestionDto> getQuestionById(Long questionId);
+
     List<QuestionDto> getQuestionsByChapterId(Long chapterId);
 
     List<QuestionDto> getAllQuestion();

@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +27,11 @@ public class QuestionServiceImpl implements QuestionService {
     private final ChapterRepository chapterRepository;
     private final ModelMapper modelMapper;
 
+
+    @Override
+    public Optional<QuestionDto> getQuestionById(Long questionId) {
+        return questionRepository.findById(questionId).map(question -> modelMapper.map(question, QuestionDto.class));
+    }
 
     @Override
     public List<QuestionDto> getQuestionsByChapterId(Long chapterId) {

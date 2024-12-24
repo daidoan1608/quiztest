@@ -40,6 +40,15 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getAllQuestion());
     }
 
+    @GetMapping("admin/questions/{questionId}")
+    public ResponseEntity<?> getQuestionById(@PathVariable("questionId") Long questionId) {
+        QuestionDto question = questionService.getQuestionById(questionId).orElse(null);
+        if (question == null) {
+            return ResponseEntity.ok(Response.builder().responseCode("404").responseMessage("No question found").build());
+        }
+        return ResponseEntity.ok(question);
+    }
+
     @PostMapping("admin/questions")
     public ResponseEntity<?> createQuestion(@RequestBody QuestionDto questionDto) {
         return ResponseEntity.ok(questionService.create(questionDto));

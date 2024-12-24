@@ -189,7 +189,7 @@ public class AuthenticationController {
                 // Add additional user information if token is valid
                 User user = userRepository.findByUsername(username)
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+                response.setUserId(user.getUserId());
                 response.setEmail(user.getEmail());
                 response.setFullName(user.getFullName());
                 response.setRole(user.getRole().name());
