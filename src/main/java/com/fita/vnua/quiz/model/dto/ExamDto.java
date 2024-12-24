@@ -11,6 +11,7 @@ import java.util.UUID;
 public class ExamDto {
     private Long examId;
     private Long subjectId;
+    private String subjectName;
     private String title;
     private String description;
     private Integer duration;

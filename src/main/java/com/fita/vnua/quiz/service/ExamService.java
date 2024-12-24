@@ -7,6 +7,8 @@ import java.util.List;
 public interface ExamService {
     List<ExamDto> getAllExams();
 
+    List<ExamDto> getExamsBySubjectId(Long subjectId);
+
     ExamDto getExamById(Long id);
 
     ExamDto createExam(ExamDto examDto, int numberOfQuestions);

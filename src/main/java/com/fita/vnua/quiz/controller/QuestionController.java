@@ -22,7 +22,7 @@ public class QuestionController {
         return ResponseEntity.ok(questions);
     }
 
-    @GetMapping("/chapter/questions/{chapterId}")
+    @GetMapping("public/chapter/questions/{chapterId}")
     public ResponseEntity<?> getQuestionByChapterId(@PathVariable("chapterId") Long chapterId) {
         List<QuestionDto> questions = questionService.getQuestionsByChapterId(chapterId);
         if (questions.isEmpty()) {

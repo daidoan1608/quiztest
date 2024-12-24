@@ -2,23 +2,30 @@ package com.fita.vnua.quiz.controller;
 
 import com.fita.vnua.quiz.model.dto.UserDto;
 import com.fita.vnua.quiz.model.dto.request.AuthenticationRequest;
+import com.fita.vnua.quiz.model.dto.request.IntrospectionRequest;
 import com.fita.vnua.quiz.model.dto.request.RefreshTokenRequest;
 import com.fita.vnua.quiz.model.dto.response.AuthenticationResponse;
+import com.fita.vnua.quiz.model.dto.response.IntrospectionResponse;
 import com.fita.vnua.quiz.model.entity.User;
 import com.fita.vnua.quiz.repository.UserRepository;
 import com.fita.vnua.quiz.security.CustomUserDetailsService;
 import com.fita.vnua.quiz.security.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("/auth")
@@ -151,6 +158,57 @@ public class AuthenticationController {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Logout failed: " + e.getMessage());
+        }
+    }
+    @PostMapping("/introspect")
+    public ResponseEntity<?> introspectToken(@RequestBody IntrospectionRequest request) {
+        try {
+            String token = request.getToken();
+            String tokenType = request.getTokenType(); // "access_token" or "refresh_token"
+
+            // Extract token claims
+            String username = jwtTokenUtil.getUsernameFromToken(token);
+            Date expirationDate = jwtTokenUtil.getExpirationDateFromToken(token);
+            Date issuedAt = jwtTokenUtil.getClaimFromToken(token, Claims::getIssuedAt);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            // Validate token
+            boolean isValid = jwtTokenUtil.validateToken(token, userDetails);
+
+            // Build introspection response
+            IntrospectionResponse response = IntrospectionResponse.builder()
+                    .active(isValid)
+                    .username(username)
+                    .tokenType(tokenType)
+                    .expirationTime(expirationDate.getTime() / 1000)
+                    .issuedAt(issuedAt.getTime() / 1000)
+                    .notBefore(issuedAt.getTime() / 1000)
+                    .build();
+
+            if (isValid) {
+                // Add additional user information if token is valid
+                User user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+                response.setEmail(user.getEmail());
+                response.setFullName(user.getFullName());
+                response.setRole(user.getRole().name());
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.ok(IntrospectionResponse.builder()
+                    .active(false)
+                    .error("expired_token")
+                    .errorDescription("The token has expired")
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(IntrospectionResponse.builder()
+                    .active(false)
+                    .error("invalid_token")
+                    .errorDescription(e.getMessage())
+                    .build());
         }
     }
 }

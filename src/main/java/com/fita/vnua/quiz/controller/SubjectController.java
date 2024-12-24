@@ -14,7 +14,7 @@ import java.util.List;
 public class SubjectController {
     private final SubjectServiceImpl subjectService;
 
-    @GetMapping("subjects")
+    @GetMapping("/public/subjects")
     public ResponseEntity<?> getAllSubject() {
         List<SubjectDto> subjects = subjectService.getAllSubject();
         if (subjects.isEmpty()) {

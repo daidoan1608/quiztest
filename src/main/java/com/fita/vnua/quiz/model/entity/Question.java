@@ -13,7 +13,7 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
 
-    @Column(nullable = false)
+    @Column(nullable = false,length = 500)
     private String content;
 
     @Enumerated(EnumType.STRING)

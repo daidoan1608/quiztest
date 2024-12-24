@@ -12,17 +12,22 @@ import org.springframework.web.bind.annotation.*;
 public class ExamController {
     private final ExamService examService;
 
-    @PostMapping("admin/exams")
+    @PostMapping("/admin/exams")
     public ResponseEntity<ExamDto> createExam(@RequestBody ExamRequest examRequest) {
         return ResponseEntity.ok(examService.createExam(examRequest.getExamDto(),examRequest.getNumberOfQuestion()));
     }
 
-    @GetMapping("admin/exams")
+    @GetMapping("public/admin/exams")
     public ResponseEntity<?> getAllExams() {
         return ResponseEntity.ok(examService.getAllExams());
     }
 
-    @GetMapping("admin/exams/{examId}")
+    @GetMapping("public/exams/{subjectId}")
+    public ResponseEntity<?> getExamsBySubjectId(@PathVariable("subjectId") Long subjectId) {
+        return ResponseEntity.ok(examService.getExamsBySubjectId(subjectId));
+    }
+
+    @GetMapping("exams/{examId}")
     public ResponseEntity<?> getExamById(@PathVariable("examId") Long examId) {
         return ResponseEntity.ok(examService.getExamById(examId));
     }

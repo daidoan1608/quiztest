@@ -45,6 +45,25 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    public List<ExamDto> getExamsBySubjectId(Long subjectId) {
+        List<Exam> exams = examRepository.findExamsBySubjectId(subjectId);
+        List<ExamDto> examDtos = new ArrayList<>();
+        for (Exam exam : exams) {
+            ExamDto examDto = new ExamDto();
+            examDto.setExamId(exam.getExamId());
+            examDto.setTitle(exam.getTitle());
+            examDto.setDescription(exam.getDescription());
+            examDto.setDuration(exam.getDuration());
+            examDto.setSubjectId(exam.getSubject().getSubjectId());
+            examDto.setCreatedBy(exam.getCreatedBy().getUserId());
+            examDto.setCreatedDate(String.valueOf(exam.getCreatedTime()));
+            examDto.setQuestions(questionService.getQuestionsByExamId(exam.getExamId()));
+            examDtos.add(examDto);
+        }
+        return examDtos;
+    }
+
+    @Override
     public ExamDto getExamById(Long id) {
         Exam exam = examRepository.findExamByExamId(id);
         ExamDto examDto = new ExamDto();
@@ -53,6 +72,7 @@ public class ExamServiceImpl implements ExamService {
         examDto.setDescription(exam.getDescription());
         examDto.setDuration(exam.getDuration());
         examDto.setSubjectId(exam.getSubject().getSubjectId());
+        examDto.setSubjectName(subjectRepository.findById(exam.getSubject().getSubjectId()).orElseThrow(() -> new RuntimeException("Subject not found")).getName());
         examDto.setCreatedBy(exam.getCreatedBy().getUserId());
         examDto.setCreatedDate(String.valueOf(exam.getCreatedTime()));
         examDto.setQuestions(questionService.getQuestionsByExamId(exam.getExamId()));
